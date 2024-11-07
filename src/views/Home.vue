@@ -12,7 +12,7 @@
         <div class="card">
           <div class="card-image">
             <figure class="image is-4by3">
-              <img :src="ram.imageUrl" :alt="ram.model" />
+              <img :src="ram.imageUrl || '/path/to/placeholder.png'" :alt="ram.model" />
             </figure>
           </div>
           <div class="card-content">
@@ -25,8 +25,8 @@
 </template>
 
 <script>
-import ramData from '@/data/ramData';
 import Navigation from '@/components/Navigation.vue';
+import { fetchRamData } from '@/data/firebaseDataService';
 
 export default 
 {
@@ -35,12 +35,21 @@ export default
   {
     Navigation,
   },
+
   data() 
   {
     return {
-      recentRams: ramData.slice(-4),
+      ramData: [], 
+      recentRams: [],
     };
   },
+
+  async created() 
+  {
+    this.ramData = await fetchRamData();
+    this.recentRams = this.ramData.slice(-4);
+  },
+
   methods: 
   {
     goToRamDetail(id) 

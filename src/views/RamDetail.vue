@@ -1,9 +1,10 @@
 <template>
-  <div class="ram-detail-page">
-    <Navigation />
+  <div v-if="ramData" class="ram-detail-page">
+    <Navigation/>
     <div class="image-container" @click="fullScreen">
-      <img :src="ramData.imageUrl" :alt="ramData.model" />
+      <img :src="ramData.imageUrl" :alt="ramData.model"/>
     </div>
+
     <h2 class="memory-title title">{{ ramData.model }}</h2>
     <div class="memory-details">
       <h3 class="subtitle">Деталі:</h3>
@@ -15,15 +16,16 @@
         <li>Напруга: {{ ramData.voltage }}</li>
       </ul>
     </div>
-    <div v-if="isFullScreen" class="full-screen-image" @click="isFullScreen = false">
-      <img :src="ramData.imageUrl" :alt="ramData.model" />
-    </div>
+    
+  </div>
+  <div v-else class="ram-detail-page">
+    <p>Дані про обрану планку оперативної пам'яті не знайдені.</p>
   </div>
 </template>
 
 <script>
-import ramData from '@/data/ramData';
 import Navigation from '@/components/Navigation.vue';
+import { fetchRamData } from '@/data/firebaseDataService';
 
 export default 
 {
@@ -32,25 +34,23 @@ export default
   {
     Navigation,
   },
+
   data() 
   {
     return {
-      ramData: {},
-      isFullScreen: false,
+      ramData: [],
     };
   },
-  created() 
+
+  async created() 
   {
-  const ramId = Number(this.$route.params.id);
-  this.ramData = ramData.find(ram => ram.id === ramId);
-  console.log("Found RAM data:", this.ramData);
-  },
-  methods: 
-  {
-    fullScreen() 
+    const ramId = this.$route.params.id;
+    const allRamData = await fetchRamData();
+    this.ramData = allRamData.find(ram => ram.id === ramId);
+    if (!this.ramData) 
     {
-      this.isFullScreen = true;
-    },
+      console.error("Дані про пам'ять не знайдені.");   
+    }
   },
 };
 </script>

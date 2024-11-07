@@ -59,7 +59,7 @@
 
 <script>
 import Navigation from '@/components/Navigation.vue';
-import ramData from '@/data/ramData';
+import { fetchRamData } from '@/data/firebaseDataService';
 
 export default 
 {
@@ -68,16 +68,25 @@ export default
   {
     Navigation,
   },
+
   data() 
   {
     return {
-      ramOptions: ramData, // всі доступні RAM-планки
-      selectedRam1: '', // ID обраної першої планки
-      selectedRam2: '', // ID обраної другої планки
-      ram1: null, // Дані першої обраної планки
-      ram2: null, // Дані другої обраної планки
+      ramData: [],
+      ramOptions: [],
+      selectedRam1: '',
+      selectedRam2: '', 
+      ram1: null,
+      ram2: null, 
     };
   },
+
+  async created() 
+  {
+    this.ramData = await fetchRamData();
+    this.ramOptions = this.ramData;
+  },
+
   methods: 
   {
     setRam(target) 
@@ -85,11 +94,13 @@ export default
       if (target === 'ram1') 
       {
         this.ram1 = this.ramOptions.find(ram => ram.id === this.selectedRam1);
-      } else if (target === 'ram2') 
+      }
+      else if (target === 'ram2') 
       {
         this.ram2 = this.ramOptions.find(ram => ram.id === this.selectedRam2);
       }
     },
+  
     compareClass(field, isRam2 = false) 
     {
       if (!this.ram1 || !this.ram2) return '';
