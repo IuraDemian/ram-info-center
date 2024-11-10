@@ -108,12 +108,48 @@ export default
       const value1 = parseFloat(this.ram1[field]);
       const value2 = parseFloat(this.ram2[field]);
 
+      if (field === 'memoryType') 
+      {
+        const memoryRanking = { DDR5: 4, DDR4: 3, DDR3: 2, DDR2: 1 };
+        const rank1 = memoryRanking[this.ram1.memoryType] || 0;
+        const rank2 = memoryRanking[this.ram2.memoryType] || 0;
+
+        if (rank1 === rank2) return 'equal';
+
+        if ((isRam2 && rank2 > rank1) || (!isRam2 && rank1 > rank2)) 
+        {
+          return 'better';
+        }
+
+        return 'worse';
+      }
+
+      if (field === 'voltage') 
+      {
+        const voltage1 = parseFloat(this.ram1.voltage);
+        const voltage2 = parseFloat(this.ram2.voltage);
+
+        if (isNaN(voltage1) || isNaN(voltage2)) return 'equal';
+
+        if (voltage1 === voltage2) return 'equal';
+
+        if ((isRam2 && voltage2 < voltage1) || (!isRam2 && voltage1 < voltage2)) 
+        {
+          return 'better';
+        }
+        
+        return 'worse';
+      }
+
       if (isNaN(value1) || isNaN(value2)) return 'equal';
+
       if (value1 === value2) return 'equal';
+
       if ((isRam2 && value2 > value1) || (!isRam2 && value1 > value2)) 
       {
         return 'better';
       }
+
       return 'worse';
     },
   },
